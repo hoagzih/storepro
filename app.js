@@ -22,8 +22,15 @@ function renderProductCards() {
 	if (loadingMessage) loadingMessage.remove();
 
 	const cardsHtml = productsData.map(product => {
-		// SỬA: dùng hàm getTypeColor để gán màu dựa trên type
-		const typeColor = getTypeColor(product.type);
+		// Xử lý type: có thể là mảng hoặc string
+		const typeArray = Array.isArray(product.type) ? product.type : [product.type];
+		const typesHTML = typeArray.map(t => {
+			const typeColor = getTypeColor(t);
+			return `<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${typeColor}">
+				${t}
+			</span>`;
+		}).join('');
+		
 		const detailsButton = `
 			<button data-product-id="${product.id}" class="details-btn w-full inline-flex justify-center items-center px-4 py-2 rounded-full shadow-md text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 mt-4">
 				<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -34,11 +41,9 @@ function renderProductCards() {
 			<!-- Thẻ Sản phẩm ${product.id} -->
 			<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
 				<div class="p-6 sm:p-8 flex flex-col h-full">
-					<!-- Nhãn Loại -->
-					<div class="mb-4">
-						<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${typeColor}">
-							${product.type}
-						</span>
+					<!-- Nhãn Loại (Tách riêng từng badge) -->
+					<div class="mb-4 flex flex-wrap gap-2">
+						${typesHTML}
 					</div>
 
 					<!-- Tiêu đề Sản phẩm -->
