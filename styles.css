@@ -1,0 +1,30 @@
+/* Đảm bảo cuộn mượt mà cho tiêu đề cố định */
+html {
+    scroll-padding-top: 4rem;
+    scroll-behavior: smooth;
+}
+
+/* Modal product */
+#product-modal { transition: opacity .3s ease, visibility .3s ease; }
+#product-modal-content { transition: transform .3s ease; }
+#product-modal.hidden { opacity: 0; visibility: hidden; }
+#product-modal:not(.hidden) { opacity: 1; visibility: visible; }
+#product-modal.hidden #product-modal-content { transform: scale(.95) translateY(1rem); }
+#product-modal:not(.hidden) #product-modal-content { transform: scale(1) translateY(0); }
+
+/* AI chat modal */
+#ai-chat-modal { transition: opacity .3s ease, transform .3s ease, visibility .3s; transform: translateY(20px) scale(.95); }
+#ai-chat-modal.hidden { opacity: 0; visibility: hidden; transform: translateY(20px) scale(.95); }
+#ai-chat-modal:not(.hidden) { opacity:1; visibility:visible; transform: translateY(0) scale(1); }
+
+/* Chat messages */
+#ai-chat-messages .chat-message { max-width:80%; margin-bottom:.75rem; padding:.75rem 1rem; border-radius:1rem; }
+#ai-chat-messages .chat-message.user { background-color:#10b981; color:#1a202c; align-self:flex-end; border-bottom-right-radius:.25rem; }
+#ai-chat-messages .chat-message.ai { background-color:#f3f4f6; color:#1f2937; align-self:flex-start; border-bottom-left-radius:.25rem; }
+.dark #ai-chat-messages .chat-message.ai { background-color:#374151; color:#f9fafb; }
+
+/* typing dots */
+#ai-chat-messages .chat-message.ai.typing .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background-color:currentColor; opacity:.7; animation:typing-dots 1s infinite steps(3,start); }
+@keyframes typing-dots { 0%{transform:translateY(0)}33%{transform:translateY(-2px)}66%{transform:translateY(2px)}100%{transform:translateY(0)} }
+#ai-chat-messages .chat-message.ai.typing .dot:nth-child(2){animation-delay:.2s}
+#ai-chat-messages .chat-message.ai.typing .dot:nth-child(3){animation-delay:.4s}

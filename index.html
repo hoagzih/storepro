@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<!-- Thêm class="dark" ở đây sẽ được quản lý bằng JS -->
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa hàng Dịch vụ Số - Tài khoản & Nâng cấp Cao cấp</title>
+    <!-- Load Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configure Tailwind for Inter font and custom colors -->
+    <script>
+        tailwind.config = {
+            // KÍCH HOẠT DARK MODE BẰNG CLASS
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-accent': '#10b981', // Emerald 500
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Import Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Link external stylesheet (moved from inline <style>) -->
+    <link rel="stylesheet" href="./styles.css">
+    
+    <!-- SỬA LỖI FLASH SÁNG/TỐI: Script chặn render để áp dụng theme ngay lập tức -->
+    <script>
+        // Logic này chạy trước khi trang render để tránh bị "flash" (nháy)
+        function getInitialTheme() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark' || (savedTheme === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    return 'dark';
+                }
+            } catch (e) {
+                // Bỏ qua lỗi (ví dụ: localStorage bị chặn)
+            }
+            return 'light';
+        }
+        if (getInitialTheme() === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+</head>
+<!-- THÊM: class cho chế độ Sáng/Tối và hiệu ứng chuyển đổi -->
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-white font-sans min-h-screen transition-colors duration-300">
+
+    <!-- HIỆU ỨNG TẢI TRANG (PRELOADER) -->
+    <div id="preloader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 dark:bg-gray-900 transition-opacity duration-500">
+        <div class="flex flex-col items-center">
+            
+            <!-- SỬA LỖI "NGOẰN NGOÈO": Thay thế SVG "mặt trời" bằng spinner (vòng quay) tiêu chuẩn -->
+            <svg class="w-16 h-16 text-primary-accent animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <!-- KẾT THÚC THAY THẾ SVG -->
+
+            <span class="mt-4 text-lg text-primary-accent font-semibold">Đang tải...</span>
+        </div>
+    </div>
+    <!-- KẾT THÚC PRELOADER -->
+
+    <!-- Tiêu đề/Thanh điều hướng cố định (THÊM: class Sáng/Tối) -->
+    <header class="sticky top-0 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-extrabold text-primary-accent tracking-tight">
+                Cửa hàng Dịch vụ Số
+            </h1>
+            <!-- Thêm nút Liên hệ ngay vào Header cố định -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- ĐÃ SỬA: Trỏ đến đúng #catalog-section (THÊM: class Sáng/Tối) -->
+                <a href="#catalog-section" class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-accent dark:hover:text-primary-accent transition duration-300 hidden sm:inline-block">
+                    Xem Danh mục
+                </a>
+                <a href="#contact-info" class="px-4 py-2 bg-primary-accent text-gray-900 font-semibold rounded-full text-sm shadow-lg hover:bg-emerald-400 transition duration-300">
+                    Liên hệ Mua ngay
+                </a>
+                <!-- NÚT SÁNG/TỐI MỚI -->
+                <button id="theme-toggle" type="button" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-700 transition duration-300">
+                    <!-- Icon Mặt trăng (hiển thị ở chế độ sáng) -->
+                    <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <!-- Icon Mặt trời (hiển thị ở chế độ tối) -->
+                    <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Thay đổi: mặt trời rõ, nhiều tia sáng, phù hợp chế độ sáng -->
+                        <circle cx="12" cy="12" r="4" fill="currentColor" class="text-yellow-400"></circle>
+                        <g stroke="currentColor" class="text-yellow-300">
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Vùng chứa Nội dung Chính -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Phần Giới thiệu (Hero Section) - (THÊM: class Sáng/Tối) -->
+        <section class="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-2xl mb-12">
+            
+            <!-- AVATAR MỚI CỦA HOÀNG VINH -->
+            <img 
+                src="https://placehold.co/96x96/10b981/1f2937?text=HV" 
+                alt="Avatar Hoàng Vinh"
+                class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-primary-accent shadow-lg"
+                onerror="this.src='https://placehold.co/96x96/10b981/1f2937?text=HV'"
+            >
+
+            <!-- Tên và Tích Xanh -->
+            <div class="flex items-center justify-center mb-4">
+                <span class="text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-300 mr-3">Hoàng Vinh</span>
+                <!-- Tích Xanh (Verified Badge) -->
+                <svg class="w-7 h-7 text-blue-400 fill-current bg-blue-900 p-1 rounded-full shadow-lg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L18.59 8l-8 8z"/>
+                </svg>
+                <span class="text-sm text-gray-500 dark:text-gray-400 ml-2 italic hidden sm:inline"> | Cung cấp dịch vụ uy tín</span>
+            </div>
+            
+            <h2 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight text-gray-900 dark:text-white">
+                Chất lượng Dịch vụ <span class="text-primary-accent">Đã Được Khẳng Định.</span>
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                Chúng tôi cam kết mang đến trải nghiệm nâng cấp tài khoản nhanh chóng, bảo mật và hỗ trợ xuyên suốt 24/7.
+            </p>
+
+            <!-- Box Cam Kết Nổi Bật -->
+            <div class="mt-8 inline-flex items-center space-x-2 p-3 bg-primary-accent/10 border border-primary-accent rounded-lg shadow-inner">
+                <svg class="w-6 h-6 text-primary-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-lg font-semibold text-primary-accent">
+                    CAM KẾT: Bảo hành toàn bộ thời gian sử dụng & Hoàn tiền 100%
+                </span>
+            </div>
+        </section>
+
+        <!-- Phần Lưới/Danh mục Sản phẩm -->
+        <section id="catalog-section">
+
+            <!-- Khu vực này sẽ được điền động bằng JavaScript -->
+            <div id="product-catalog" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <!-- Thẻ Sản phẩm sẽ được chèn vào đây -->
+                <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg" id="loading-message">
+                    <p class="text-gray-500 dark:text-gray-400">Đang tải sản phẩm...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phần Thông tin Liên hệ Mua hàng Mới (THÊM: class Sáng/Tối) -->
+        <section id="contact-info" class="pt-8">
+            <h3 class="text-3xl font-bold text-center mb-8 text-primary-accent">Thông Tin Liên Hệ Mua Hàng</h3>
+            <p class="text-lg text-center text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
+                Vui lòng liên hệ với **Hoàng Vinh** qua một trong các kênh dưới đây để nhận báo giá, hỗ trợ thanh toán và kích hoạt dịch vụ nhanh nhất.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Thẻ Zalo -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 text-center">
+                    <!-- Icon Zalo (Inline SVG - Đã thay đổi thành biểu tượng Điện thoại/Chat) -->
+                    <svg class="w-10 h-10 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.5l1 4-3 2a11 11 0 007 7l2-3 4 1V19a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Zalo/SĐT (Hoàng Vinh)</h4>
+                    <p class="text-primary-accent text-2xl font-bold mb-3">0901 234 567</p>
+                    <a href="https://zalo.me/0901234567" target="_blank" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition duration-200">Bấm để nhắn tin Zalo</a>
+                </div>
+
+                <!-- Thẻ Telegram -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 text-center">
+                    <!-- Icon Telegram (Inline SVG - Giữ nguyên) -->
+                    <svg class="w-10 h-10 text-cyan-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Telegram (Hoàng Vinh)</h4>
+                    <p class="text-primary-accent text-2xl font-bold mb-3">@HoangVinhDigital</p>
+                    <a href="https://t.me/HoangVinhDigital" target="_blank" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition duration-200">Liên hệ qua Telegram</a>
+                </div>
+
+                <!-- Thẻ Email -->
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 text-center">
+                    <!-- Icon Email (Inline SVG - Đã thay đổi thành biểu tượng Phong bì) -->
+                    <svg class="w-10 h-10 text-yellow-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Email (Hoàng Vinh)</h4>
+                    <p class="text-primary-accent text-base font-bold mb-3 break-words">hoangvinhdigital@gmail.com</p>
+                    <a href="mailto:hoangvinhdigital@gmail.com" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition duration-200">Gửi mail cho chúng tôi</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Chân trang (THÊM: class Sáng/Tối) -->
+    <footer class="mt-20 py-6 bg-gray-200 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-600 dark:text-gray-500 text-sm">
+            &copy; 2024 Cửa hàng Dịch vụ Số. Bảo lưu mọi quyền. Liên hệ chúng tôi để hỏi về việc mua hàng.
+        </div>
+    </footer>
+
+    <!-- MODAL CHI TIẾT SẢN PHẨM (MỚI) -->
+    <div id="product-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm hidden">
+        <div id="product-modal-content" class="w-full max-w-lg bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 id="modal-title" class="text-xl font-semibold text-gray-900 dark:text-white">Chi tiết Sản phẩm</h3>
+                <button id="modal-close-btn" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <p id="modal-price" class="text-3xl font-bold text-primary-accent mb-4">Giá</p>
+                <p id="modal-details" class="text-gray-600 dark:text-gray-300 whitespace-pre-line">Chi tiết...</p>
+            </div>
+            <div class="p-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-right">
+                <button id="modal-close-btn-footer" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-200">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- KẾT THÚC MODAL -->
+
+    <!-- ==================================== -->
+    <!-- TÍNH NĂNG MỚI: AI CHATBOT (GEMINI)   -->
+    <!-- ==================================== -->
+
+    <!-- Nút Nổi (Floating Button) để mở Chatbot -->
+    <button id="ai-chat-toggle" title="Hỏi Trợ lý AI" class="fixed z-50 bottom-6 right-6 w-16 h-16 bg-primary-accent rounded-full shadow-2xl flex items-center justify-center text-gray-900 transform hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-accent focus:ring-offset-white dark:focus:ring-offset-gray-900">
+        <!-- Biểu tượng Sparkles (Ngầu) -->
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-6.857 2.143L12 21l-2.143-6.857L3 12l6.857-2.143L12 3z"></path>
+        </svg>
+    </button>
+
+    <!-- Modal của Chatbot -->
+    <div id="ai-chat-modal" class="fixed z-40 bottom-24 right-6 w-full max-w-md h-full max-h-[70vh] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col hidden border border-gray-200 dark:border-gray-700">
+        <!-- Header của Modal -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                <svg class="w-5 h-5 text-primary-accent mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-6.857 2.143L12 21l-2.143-6.857L3 12l6.857-2.143L12 3z"></path></svg>
+                Trợ lý AI Hỗ trợ
+            </h3>
+            <button id="ai-chat-close-btn" class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Khu vực hiển thị tin nhắn -->
+        <div id="ai-chat-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
+            <!-- Tin nhắn chào mừng -->
+            <div class="chat-message ai">
+                Xin chào! Tôi là Trợ lý AI của Hoàng Vinh. Bạn cần hỏi gì về các dịch vụ của chúng tôi?
+            </div>
+            <!-- Tin nhắn sẽ được thêm vào đây bằng JS -->
+        </div>
+        
+        <!-- Khu vực nhập liệu -->
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+            <form id="ai-chat-form" class="flex items-center space-x-2">
+                <input id="ai-chat-input" type="text" placeholder="Hỏi về Spotify, Netflix..." class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-accent" autocomplete="off">
+                <button type="submit" class="p-3 bg-primary-accent text-gray-900 rounded-full shadow-lg hover:bg-emerald-400 transition duration-300">
+                    <svg class="w-5 h-5 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- KẾT THÚC AI CHATBOT -->
+
+    <!-- JavaScript: load editable product data first, then app logic -->
+    <script src="./products.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
