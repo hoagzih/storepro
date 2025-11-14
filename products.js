@@ -3,7 +3,7 @@
 window.PRODUCTS_DATA = [
 	{
 		id: 1,
-		name: "Gemini Pro (12 )",
+		name: "Gemini Pro (12 Tháng)",
 		type: "Tài khoản Cao cấp",
 		price: "99.000 VNĐ",
 		description: "Gemini Pro là một mô hình AI tiên tiến của Google, nổi bật nhờ khả năng đa phương thức, cho phép nó hiểu và xử lý đồng thời văn bản, hình ảnh, âm thanh, video và mã lập trình. Mô hình này rất mạnh mẽ trong việc suy luận phức tạp, giải quyết các vấn đề khó về logic và lập trình. Với bộ nhớ lớn, nó có thể phân tích lượng thông tin khổng lồ như toàn bộ cuốn sách hoặc cơ sở mã..",
@@ -40,4 +40,5 @@ window.PRODUCTS_DATA = [
 	// Thêm / sửa / xóa sản phẩm tại đây theo mẫu trên
 ];
 // --- Kết thúc khu vực chỉnh sửa ---
+
 
